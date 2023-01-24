@@ -1,0 +1,44 @@
+alias dPipeReader d0
+
+alias dCO2Filter d1
+alias dNFilter d2
+alias dO2Filter d3
+alias dVolFilter d4
+
+define cFilters -348054045
+
+alias rPressure r0
+alias rRatio r1
+alias rFilterState r2
+
+# turn off all filters to start
+sb cFilters On 0
+
+main_loop:
+sleep 1
+
+# nitrogen
+l rPressure dPipeReader Pressure
+sgt rPressure rPressure 2500
+
+l rRatio dPipeReader RatioCarbonDioxide
+sgt rRatio rRatio .2
+and rFilterState rPressure rRatio
+s dCO2Filter On rFilterState
+
+l rRatio dPipeReader RatioNitrogen
+sgt rRatio rRatio .2
+and rFilterState rPressure rRatio
+s dNFilter On rFilterState
+
+l rRatio dPipeReader RatioOxygen
+sgt rRatio rRatio .2
+and rFilterState rPressure rRatio
+s dO2Filter On rFilterState
+
+l rRatio dPipeReader RatioVolatiles
+sgt rRatio rRatio .2
+and rFilterState rPressure rRatio
+s dVolFilter On rFilterState
+
+j main_loop
