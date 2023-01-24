@@ -17,25 +17,29 @@ sb cFilters On 0
 main_loop:
 sleep 1
 
-# nitrogen
+# read the pipe system pressure
 l rPressure dPipeReader Pressure
 sgt rPressure rPressure 2500
 
+# >20% CO2
 l rRatio dPipeReader RatioCarbonDioxide
 sgt rRatio rRatio .2
 and rFilterState rPressure rRatio
 s dCO2Filter On rFilterState
 
+# >20% Nitrogen
 l rRatio dPipeReader RatioNitrogen
 sgt rRatio rRatio .2
 and rFilterState rPressure rRatio
 s dNFilter On rFilterState
 
+# >20% Oxygen
 l rRatio dPipeReader RatioOxygen
 sgt rRatio rRatio .2
 and rFilterState rPressure rRatio
 s dO2Filter On rFilterState
 
+# >20% Volatiles
 l rRatio dPipeReader RatioVolatiles
 sgt rRatio rRatio .2
 and rFilterState rPressure rRatio
