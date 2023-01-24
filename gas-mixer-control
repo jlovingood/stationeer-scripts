@@ -1,0 +1,30 @@
+alias dPipeSensor d0
+alias dStatusLED d1
+define dGasMixer 2104106366
+alias rPipePressure r0
+
+define colorBlue 0
+
+s dStatusLED Color colorBlue
+s dStatusLED On 0
+
+main:
+s dPipeSensor On 1
+yield
+
+l rPipePressure dPipeSensor Pressure
+bltal rPipePressure 2000 mixeron
+bgtal rPipePressure 20000 mixeroff
+
+sleep 1
+j main
+
+mixeron:
+sb dGasMixer On 1
+s dStatusLED On 1
+j ra
+
+mixeroff:
+sb dGasMixer On 0
+s dStatusLED On 0
+j ra
