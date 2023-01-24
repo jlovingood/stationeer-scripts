@@ -1,0 +1,57 @@
+alias dBattery d0
+alias dGennyReadout d1
+alias dBaseReadout d2
+alias dOutputDisplay d3
+alias dGenerator d4
+
+define cSleepWait 3
+
+# set start state
+l dGenerator On 0
+
+main_loop:
+s dOutputDisplay Color 6
+# load values
+l r0 dGennyReadout PowerActual
+l r1 dBattery Ratio
+l r2 dBaseReadout PowerActual
+
+# show incoming charge
+s dOutputDisplay Mode 2
+s dOutputDisplay Setting r0
+sleep cSleepWait
+
+# show battery percentage
+s dOutputDisplay Mode 1
+s dOutputDisplay Setting r1
+sleep cSleepWait
+
+# show outgoing draw
+move r4 1
+# save one if draw > generation
+sgt r5 r2 r0
+# add one to the existing reg
+add r4 r4 r5
+# mul the 1 / 2 by 2 to get 2 / 4 for color
+mul r4 r4 2
+
+s dOutputDisplay Color r4
+s dOutputDisplay Mode 2
+s dOutputDisplay Setting r2
+sleep cSleepWait
+
+# start genny
+l r4 dBattery Ratio
+bltal r4 0.1 start_genny
+
+# stop genny
+bgtal r4 0.9 stop_genny
+j main_loop
+
+start_genny:
+s dGenerator On 1
+j ra
+
+stop_genny:
+s dGenerator On 0
+j ra
