@@ -1,9 +1,8 @@
 alias dBattery d0
 alias dGenerator d1
 
-
 # set start state
-l dGenerator On 0
+s dGenerator On 0
 
 main_loop:
 l r0 dBattery Ratio
