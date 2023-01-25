@@ -1,0 +1,26 @@
+alias dBattery d0
+alias dGenerator d1
+
+
+# set start state
+l dGenerator On 0
+
+main_loop:
+l r0 dBattery Ratio
+
+# start genny
+bltal r0 0.1 start_genny
+
+# stop genny
+bgtal r0 0.9 stop_genny
+
+sleep 1
+j main_loop
+
+start_genny:
+s dGenerator On 1
+j ra
+
+stop_genny:
+s dGenerator On 0
+j ra
