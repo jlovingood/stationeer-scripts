@@ -2,7 +2,6 @@ alias dBattery d0
 alias dGennyReadout d1
 alias dBaseReadout d2
 alias dOutputDisplay d3
-alias dGenerator d4
 
 define cSleepWait 3
 
@@ -40,18 +39,4 @@ s dOutputDisplay Mode 2
 s dOutputDisplay Setting r2
 sleep cSleepWait
 
-# start genny
-l r4 dBattery Ratio
-bltal r4 0.1 start_genny
-
-# stop genny
-bgtal r4 0.9 stop_genny
 j main_loop
-
-start_genny:
-s dGenerator On 1
-j ra
-
-stop_genny:
-s dGenerator On 0
-j ra
