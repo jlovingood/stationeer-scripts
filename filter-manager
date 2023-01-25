@@ -4,8 +4,10 @@ alias dCO2Filter d1
 alias dNFilter d2
 alias dO2Filter d3
 alias dVolFilter d4
+alias dNO2Filter d5
 
 define cFilters -348054045
+define cFilterRatio .1
 
 alias rPressure r0
 alias rRatio r1
@@ -21,27 +23,33 @@ sleep 1
 l rPressure dPipeReader Pressure
 sgt rPressure rPressure 2500
 
-# >20% CO2
+# CO2
 l rRatio dPipeReader RatioCarbonDioxide
-sgt rRatio rRatio .2
+sgt rRatio rRatio cFilterRatio
 and rFilterState rPressure rRatio
 s dCO2Filter On rFilterState
 
-# >20% Nitrogen
+# Nitrogen
 l rRatio dPipeReader RatioNitrogen
-sgt rRatio rRatio .2
+sgt rRatio rRatio cFilterRatio
 and rFilterState rPressure rRatio
 s dNFilter On rFilterState
 
-# >20% Oxygen
+# Oxygen
 l rRatio dPipeReader RatioOxygen
-sgt rRatio rRatio .2
+sgt rRatio rRatio cFilterRatio
 and rFilterState rPressure rRatio
 s dO2Filter On rFilterState
 
-# >20% Volatiles
+# Volatiles
 l rRatio dPipeReader RatioVolatiles
-sgt rRatio rRatio .2
+sgt rRatio rRatio cFilterRatio
+and rFilterState rPressure rRatio
+s dVolFilter On rFilterState
+
+# Nitrous Oxide
+l rRatio dPipeReader RatioNitrousOxide
+sgt rRatio rRatio cFilterRatio
 and rFilterState rPressure rRatio
 s dVolFilter On rFilterState
 
