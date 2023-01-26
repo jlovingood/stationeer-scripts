@@ -7,9 +7,9 @@ alias dVolFilter d4
 alias dNO2Filter d5
 
 define cFilters -348054045
-define cFilterRatio .1
+define cActivateKAmt 1000
 
-alias rPressure r0
+alias rTotalMoles r0
 alias rRatio r1
 alias rFilterState r2
 
@@ -17,40 +17,43 @@ alias rFilterState r2
 sb cFilters On 0
 
 main_loop:
-sleep 1
-
-# read the pipe system pressure
-l rPressure dPipeReader Pressure
-sgt rPressure rPressure 2500
+# read the pipe contents
+l rTotalMoles dPipeReader TotalMoles
 
 # CO2
+# read the ratio of CO2 in the pipe
 l rRatio dPipeReader RatioCarbonDioxide
-sgt rRatio rRatio cFilterRatio
-and rFilterState rPressure rRatio
+# multiply that by the total moles
+mul rRatio rTotalMoles rRatio
+# save 1 if greater than 1kmols
+sgt rFilterState rRatio cActivateKAmt
+# load saved value to filter
 s dCO2Filter On rFilterState
+
 
 # Nitrogen
 l rRatio dPipeReader RatioNitrogen
-sgt rRatio rRatio cFilterRatio
-and rFilterState rPressure rRatio
+mul rRatio rTotalMoles rRatio
+sgt rFilterState rRatio cActivateKAmt
 s dNFilter On rFilterState
 
 # Oxygen
 l rRatio dPipeReader RatioOxygen
-sgt rRatio rRatio cFilterRatio
-and rFilterState rPressure rRatio
+mul rRatio rTotalMoles rRatio
+sgt rFilterState rRatio cActivateKAmt
 s dO2Filter On rFilterState
 
 # Volatiles
 l rRatio dPipeReader RatioVolatiles
-sgt rRatio rRatio cFilterRatio
-and rFilterState rPressure rRatio
+mul rRatio rTotalMoles rRatio
+sgt rFilterState rRatio cActivateKAmt
 s dVolFilter On rFilterState
 
 # Nitrous Oxide
 l rRatio dPipeReader RatioNitrousOxide
-sgt rRatio rRatio cFilterRatio
-and rFilterState rPressure rRatio
-s dVolFilter On rFilterState
+mul rRatio rTotalMoles rRatio
+sgt rFilterState rRatio cActivateKAmt
+s dNO2Filter On rFilterState
 
+sleep 5
 j main_loop
