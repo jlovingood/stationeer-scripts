@@ -1,0 +1,85 @@
+alias dGenerator d0
+alias dFuelPump d1
+alias dCooler d2
+alias dGasSensor d3
+alias dBatteryIC d4
+alias dStartSwitch d5
+# virtal dev alias for batch vent ops
+define dActiveVents -1129453144
+
+alias rBatteryStart r0
+alias rManualStart r1
+alias rHousingTemp r2
+alias rCoolerActive r3
+
+# 10 C lower, 45 C higher
+define cMinRoomTemp 283.15
+define cMaxRoomTemp 318.15
+
+# set starting device states
+# set fuel pump to 1L
+s dFuelPump On 0
+s dFuelPump Setting 1
+
+# set up cooler unit, on but not running
+s dCooler Mode 0
+s dCooler On 1
+
+sb dActiveVents On 0
+# set active vents to inward
+sb dActiveVents Mode 1
+# genny requires &gt;20 kpa
+sb dActiveVents PressureExternal 25
+
+main_wait:
+# read battery IC and switch val, 1 = run
+l rBatteryStart dBatteryIC Setting
+l rManualStart dStartSwitch Open
+
+# if either are 1, start the genny
+or r0 rBatteryStart rManualStart
+beq r0 1 start_generator
+
+yield
+j main_wait
+
+# With a Bocephus sticker on his 442
+# He'd light 'em up just for fun
+start_generator:
+s dFuelPump On 1
+s dGenerator On 1
+
+cooling_loop:
+yield
+l rHousingTemp dGasSensor Temperature
+
+sgt rCoolerActive rHousingTemp cMaxRoomTemp
+beqal rCoolerActive 1 start_cooler
+
+slt rCoolerActive rHousingTemp cMinRoomTemp
+beqal rCoolerActive 1 stop_cooler
+
+# check run conditions
+l rBatteryStart dBatteryIC Setting
+l rManualStart dStartSwitch Open
+# if both are 0, stop the genny
+or r0 rBatteryStart rManualStart
+beq r0 0 stop_generator
+
+j cooling_loop
+
+stop_generator:
+s dFuelPump On 0
+sleep 1
+jal stop_cooler
+j main_wait
+
+start_cooler:
+sb dActiveVents On 1
+s dCooler Mode 1
+j ra
+
+stop_cooler:
+sb dActiveVents On 0
+s dCooler Mode 0
+j ra
