@@ -1,10 +1,10 @@
 alias dPipeReader d0
 
 alias dCO2Filter d1
-alias dNFilter d2
+alias dNO2Filter d2
 alias dO2Filter d3
-alias dVolFilter d4
-alias dNO2Filter d5
+alias dNFilter d4
+alias dVolFilter d5
 
 define cFilters -348054045
 define cActivateKAmt 1000
@@ -30,12 +30,11 @@ sgt rFilterState rRatio cActivateKAmt
 # load saved value to filter
 s dCO2Filter On rFilterState
 
-
-# Nitrogen
-l rRatio dPipeReader RatioNitrogen
+# Nitrous Oxide
+l rRatio dPipeReader RatioNitrousOxide
 mul rRatio rTotalMoles rRatio
 sgt rFilterState rRatio cActivateKAmt
-s dNFilter On rFilterState
+s dNO2Filter On rFilterState
 
 # Oxygen
 l rRatio dPipeReader RatioOxygen
@@ -43,17 +42,18 @@ mul rRatio rTotalMoles rRatio
 sgt rFilterState rRatio cActivateKAmt
 s dO2Filter On rFilterState
 
+# Nitrogen
+l rRatio dPipeReader RatioNitrogen
+mul rRatio rTotalMoles rRatio
+sgt rFilterState rRatio cActivateKAmt
+s dNFilter On rFilterState
+
 # Volatiles
 l rRatio dPipeReader RatioVolatiles
 mul rRatio rTotalMoles rRatio
 sgt rFilterState rRatio cActivateKAmt
 s dVolFilter On rFilterState
 
-# Nitrous Oxide
-l rRatio dPipeReader RatioNitrousOxide
-mul rRatio rTotalMoles rRatio
-sgt rFilterState rRatio cActivateKAmt
-s dNO2Filter On rFilterState
 
 sleep 5
 j main_loop
